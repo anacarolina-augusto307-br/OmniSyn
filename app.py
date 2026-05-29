@@ -256,9 +256,8 @@ def main() -> None:
     st.markdown(f"**{PROJECT_SUBTITLE}**")
     st.caption(PROJECT_MEANING)
     st.markdown(
-        "Exploração de DNA/RNA com Biopython: composição, ORFs, códon e alinhamento. "
-        "Dados reais de referência em `sample_data/` (GenBank). "
-        "Pipeline FASTQ local: `python omnisyn_pipeline.py`."
+        "DNA/RNA exploration with Biopython including GC-content, ORF detection, "
+        "codon usage analysis, and microbial sequence comparison workflows."
     )
 
     with st.sidebar:
