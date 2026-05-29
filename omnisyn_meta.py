@@ -2,12 +2,11 @@
 
 PROJECT_NAME = "OmniSyn"
 PROJECT_SUBTITLE = (
-    "Ecossistema e framework para automação ponta a ponta em sequenciamento "
-    "e biologia sintética"
+    "End-to-end computational framework for sequencing analysis and synthetic biology workflows."
 )
 PROJECT_MEANING = (
-    "Omni (tudo, universal) + Syn (biologia sintética, sequenciamento): "
-    "um sistema técnico que gerencia e automatiza o processo completo."
+   "Omni (universal) + Syn (synthetic biology and sequencing): "
+"a computational framework designed to streamline and automate biological sequence analysis workflows."
 )
 PIPELINE_BANNER = f"=== {PROJECT_NAME} — LINHA DE PRODUÇÃO FASTQ ==="
 REPORT_HEADER = f"=== RELATÓRIO FINAL {PROJECT_NAME} — FASTQC + FASTP ==="
