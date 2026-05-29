@@ -1,9 +1,9 @@
 # OmniSyn — tema da interface web (app.py)
 
 [theme]
-primaryColor = "#0d9488"
-backgroundColor = "#f8fafc"
-secondaryBackgroundColor = "#ecfeff"
+primaryColor = "#4a0d94"
+backgroundColor = "#b8abd6"
+secondaryBackgroundColor = "#efd3f0"
 textColor = "#0f172a"
 font = "sans serif"
 
