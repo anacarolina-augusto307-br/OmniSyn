@@ -5,7 +5,7 @@ primaryColor = "#4a0d94"
 backgroundColor = "#ddd5f0"
 secondaryBackgroundColor = "#efd3f0"
 textColor = "#0f172a"
-font = "sans serif"
+font = "cascadia code"
 
 [server]
 headless = true
