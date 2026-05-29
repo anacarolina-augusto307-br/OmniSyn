@@ -1,0 +1,31 @@
+OmniSyn — comparação entre organismos (sample_data/)
+Métricas: GC%, ORFs (min 90 bp), top 10 códons.
+
+# ORF prediction is simplistic and may not fully represent fragmented metagenomic assemblies.
+
+Nota: GC% abaixo foi verificado nos FASTA locais. Para ORFs e códon completos, execute:
+  python scripts/compare_organisms.py
+(Substitui este arquivo com o relatório completo.)
+
+## solo (bactéria)
+ID: soil_bacillus_subtilis_NC000964_fragment
+Comprimento: 25,000 bp
+GC%: 44.35
+AT%: 55.65
+ORFs / códon: execute o script acima para atualizar
+
+## marinho (bactéria)
+ID: marine_vibrio_cholerae_NC002505_fragment
+Comprimento: 25,000 bp
+GC%: 48.98
+AT%: 51.02
+ORFs / códon: execute o script acima para atualizar
+
+## archaea (halófila)
+ID: archaea_haloferax_volcanii_NC013967_fragment
+Comprimento: 25,000 bp
+GC%: 67.97
+AT%: 32.03
+ORFs / códon: execute o script acima para atualizar
+
+Interpretação exploratória: archaea apresenta GC% mais alto que as duas bactérias neste trecho inicial do cromossomo; não implica regra geral sem genoma completo ou contexto metagenômico.
