@@ -12,63 +12,6 @@ import streamlit as st
 from Bio.SeqRecord import SeqRecord
 
 from omnisyn_meta import PROJECT_MEANING, PROJECT_NAME, PROJECT_SUBTITLE
-
-
-# Logo Omnisyn centralizada
-left, center_col, right = st.columns([1.1,1,1])
-
-with center_col:
-    st.image(
-        "assets/logo_omnisyn_sf.png.png",
-        width=240
-    )
-
-st.markdown(
-    """
-    <h1 style="
-        text-align:center;
-        margin-top:-35px;
-        margin-bottom:0px;
-        font-weight:700;
-    ">
-        OmniSyn
-    </h1>
-    """,
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    """
-    <p style="text-align:center; font-size:18px;">
-        Computational Framework for Microbial Genomics and Metagenomics
-    </p>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# Abas de organização da página
-tab1, tab2 = st.tabs(["🧬 Sequence Analyzer", "📄 Project Documentation"])
-
-with tab1:
-    st.subheader("Analyze Biological Sequences")
-    
-    # Container com borda para a área de trabalho
-    with st.container(border=True):
-        sequence_input = st.text_area(
-            "Paste sequence(s) here:", 
-            placeholder=">seq1\nATGAAACGC...", 
-            height=150
-        )
-        
-        run_analysis = st.button("Run Analysis", type="primary") # Botão com a cor primária (Verde)
-
-with tab2:
-    st.subheader("About the Project")
-    st.write("Aqui você pode colocar a história do projeto, inspiração em forense, etc.")
-
-
-#Sem ligação direta com a interface, portanto, sem alterações no momento.
 from analyzer.core import (
     LIMITATIONS,
     analyze_sequence,
@@ -79,19 +22,20 @@ from analyzer.core import (
     sliding_gc,
 )
 
-ORGANISM_SAMPLES = {
-    "Bacillus subtilis (solo)": "sample_data/bacillus_subtilis_soil.fasta",
-    "Vibrio cholerae (marinho)": "sample_data/vibrio_cholerae_marine.fasta",
-    "Haloferax volcanii (archaea)": "sample_data/haloferax_volcanii_archaea.fasta",
-    "Demo curta (example.fasta)": "sample_data/example.fasta",
-}
-
+# 1. CONFIGURAÇÃO DA PÁGINA (Sempre a primeira instrução Streamlit)
 st.set_page_config(
     page_title=PROJECT_NAME,
     page_icon="🧬",
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+ORGANISM_SAMPLES = {
+    "Bacillus subtilis (solo)": "sample_data/bacillus_subtilis_soil.fasta",
+    "Vibrio cholerae (marinho)": "sample_data/vibrio_cholerae_marine.fasta",
+    "Haloferax volcanii (archaea)": "sample_data/haloferax_volcanii_archaea.fasta",
+    "Demo curta (example.fasta)": "sample_data/example.fasta",
+}
 
 SAMPLE_FASTA = """>sample_gene
 ATGAAACGCATTAGCACCACCATTACCACCACCATCACCATTACCACAGGTA
@@ -113,6 +57,7 @@ def apply_styles() -> None:
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.25rem;
+            text-align: center;
         }
         .metric-card {
             background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%);
@@ -234,12 +179,12 @@ def render_sequence_analysis(record: SeqRecord) -> None:
     )
 
     with tab1:
-        st.text_area("Original", str(record.seq), height=120, disabled=True)
-        st.text_area("Reverse complement", result.reverse_complement, height=120, disabled=True)
+        st.text_area("Original", str(record.seq), height=120, disabled=True, key=f"orig_{result.id}")
+        st.text_area("Reverse complement", result.reverse_complement, height=120, disabled=True, key=f"rev_{result.id}")
 
     with tab2:
-        st.text_area("mRNA (T→U)", result.mrna[:2000], height=100, disabled=True)
-        st.text_area("Protein (stop at first stop codon)", result.protein[:2000], height=100, disabled=True)
+        st.text_area("mRNA (T→U)", result.mrna[:2000], height=100, disabled=True, key=f"mrna_{result.id}")
+        st.text_area("Protein (stop at first stop codon)", result.protein[:2000], height=100, disabled=True, key=f"prot_{result.id}")
         with st.expander("Reading frames (preview)"):
             for frame, prot in result.reading_frames.items():
                 st.markdown(f"**Frame {frame}**")
@@ -271,8 +216,8 @@ def render_sequence_analysis(record: SeqRecord) -> None:
                 format_func=lambda i: f"ORF {i+1} — {orfs[i].length} bp (frame {orfs[i].strand}{orfs[i].frame})",
                 key=f"orf_sel_{result.id}",
             )
-            st.text_area("ORF DNA", orfs[sel].sequence, height=80, disabled=True)
-            st.text_area("ORF protein", orfs[sel].protein, height=80, disabled=True)
+            st.text_area("ORF DNA", orfs[sel].sequence, height=80, disabled=True, key=f"orfdna_{result.id}")
+            st.text_area("ORF protein", orfs[sel].protein, height=80, disabled=True, key=f"orfprot_{result.id}")
 
     with tab4:
         st.plotly_chart(plot_codon_heatmap(result.codon_usage), use_container_width=True)
@@ -309,16 +254,26 @@ def render_sequence_analysis(record: SeqRecord) -> None:
 
 def main() -> None:
     apply_styles()
-    st.markdown(f'<p class="main-header">{PROJECT_NAME}</p>', unsafe_allow_html=True)
-    st.markdown(f"**{PROJECT_SUBTITLE}**")
-    st.caption(PROJECT_MEANING)
-    st.markdown(
-        "DNA/RNA exploration with Biopython including GC-content, ORF detection, "
-        "codon usage analysis, and microbial sequence comparison workflows."
-    )
+    
+    # Header centralizada com a logo
+    left, center_col, right = st.columns([1.1, 1, 1])
+    with center_col:
+        st.image("assets/logo_omnisyn_sf.png.png", width=240)
 
+    st.markdown(f'<p class="main-header">{PROJECT_NAME}</p>', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <p style="text-align:center; font-size:18px; color: #a1a1aa; margin-top:-10px;">
+            {PROJECT_SUBTITLE}
+        </p>
+        """, 
+        unsafe_allow_html=True
+    )
+    st.markdown("---")
+
+    # Configuração do SIDEBAR - entrada
     with st.sidebar:
-        st.header("Input")
+        st.header("Input Settings")
         input_format = st.selectbox(
             "Format",
             ["fasta", "plain", "genbank"],
@@ -349,12 +304,12 @@ def main() -> None:
             report_path = Path("sample_data/comparison_report.txt")
             try:
                 from scripts.compare_organisms import compare
-
                 report_path.write_text(compare(), encoding="utf-8")
                 st.success(f"Relatório gerado: `{report_path}`")
             except Exception as exc:
                 st.error(f"Não foi possível gerar comparação: {exc}")
 
+    # Processamento dos dados de entrada 
     if uploaded:
         raw = uploaded.read().decode("utf-8", errors="replace")
         fmt = input_format
@@ -373,87 +328,112 @@ def main() -> None:
         raw = SAMPLE_FASTA
         fmt = "fasta"
     else:
-        raw = st.text_area(
-            "Paste sequence(s)",
-            height=200,
-            placeholder=">seq1\nATGAAACGC...\n\nOr plain: ATGAAACGC...",
+        raw = "" # Deixa vazio por padrão se nenhuma opção lateral for selecionada
+
+    # --- ORGANIZAÇÃO DAS ABAS DA INTERFACE ---
+    tab1, tab2 = st.tabs(["🧬 Sequence Analyzer", "📄 Project Documentation"])
+
+    with tab1:
+        # Se não houver arquivo/amostra da sidebar, exibe a caixa de texto para colar a sequência aqui dentro
+        if not raw or not raw.strip():
+            raw = st.text_area(
+                "Paste sequence(s) here:",
+                height=200,
+                placeholder=">seq1\nATGAAACGC...\n\nOr plain: ATGAAACGC...",
+                key="main_tab_text_area"
+            )
+        
+        if not raw or not raw.strip():
+            st.info("💡 Paste a sequence below, upload a file, or enable a sample sequence in the sidebar to begin.")
+            st.stop()
+
+        # Parse e execução da análise
+        try:
+            records = parse_sequences(raw, fmt=fmt)
+        except Exception as exc:
+            st.error(f"Could not parse input: {exc}")
+            st.stop()
+
+        if not records:
+            st.warning("No sequences found in the input.")
+            st.stop()
+
+        st.success(f"Loaded **{len(records)}** sequence(s).")
+
+        page = st.radio(
+            "View",
+            ["Single sequence", "Compare sequences"],
+            horizontal=True,
+            label_visibility="collapsed",
         )
-        fmt = input_format
 
-    if not raw or not raw.strip():
-        st.info("Paste a sequence, upload a file, or enable the sample sequence in the sidebar.")
-        st.stop()
-
-    try:
-        records = parse_sequences(raw, fmt=fmt)
-    except Exception as exc:
-        st.error(f"Could not parse input: {exc}")
-        st.stop()
-
-    if not records:
-        st.warning("No sequences found in the input.")
-        st.stop()
-
-    st.success(f"Loaded **{len(records)}** sequence(s).")
-
-    page = st.radio(
-        "View",
-        ["Single sequence", "Compare sequences"],
-        horizontal=True,
-        label_visibility="collapsed",
-    )
-
-    if page == "Single sequence":
-        if len(records) > 1:
-            idx = st.selectbox(
-                "Select sequence",
-                range(len(records)),
-                format_func=lambda i: f"{records[i].id} ({len(records[i].seq)} bp)",
-            )
-            record = records[idx]
+        if page == "Single sequence":
+            if len(records) > 1:
+                idx = st.selectbox(
+                    "Select sequence",
+                    range(len(records)),
+                    format_func=lambda i: f"{records[i].id} ({len(records[i].seq)} bp)",
+                )
+                record = records[idx]
+            else:
+                record = records[0]
+            render_sequence_analysis(record)
+        
         else:
-            record = records[0]
-        render_sequence_analysis(record)
-    else:
-        if len(records) < 2:
-            st.warning("Need at least two sequences for comparison. Add more to your FASTA input.")
-            st.stop()
-        i, j = st.columns(2)
-        with i:
-            idx_a = st.selectbox("Sequence A", range(len(records)), format_func=lambda x: records[x].id)
-        with j:
-            idx_b = st.selectbox(
-                "Sequence B",
-                range(len(records)),
-                index=min(1, len(records) - 1),
-                format_func=lambda x: records[x].id,
-            )
-        if idx_a == idx_b:
-            st.warning("Select two different sequences.")
-            st.stop()
+            if len(records) < 2:
+                st.warning("Need at least two sequences for comparison. Add more to your FASTA input.")
+                st.stop()
+            i, j = st.columns(2)
+            with i:
+                idx_a = st.selectbox("Sequence A", range(len(records)), format_func=lambda x: records[x].id)
+            with j:
+                idx_b = st.selectbox(
+                    "Sequence B",
+                    range(len(records)),
+                    index=min(1, len(records) - 1),
+                    format_func=lambda x: records[x].id,
+                )
+            if idx_a == idx_b:
+                st.warning("Select two different sequences.")
+                st.stop()
 
-        col_a, col_b = st.columns(2)
-        with col_a:
-            ra = analyze_sequence(records[idx_a])
-            st.plotly_chart(plot_nucleotide_bar(ra.nucleotide_percent, f"{ra.id} composition"), use_container_width=True)
-        with col_b:
-            rb = analyze_sequence(records[idx_b])
-            st.plotly_chart(plot_nucleotide_bar(rb.nucleotide_percent, f"{rb.id} composition"), use_container_width=True)
+            col_a, col_b = st.columns(2)
+            with col_a:
+                ra = analyze_sequence(records[idx_a])
+                st.plotly_chart(plot_nucleotide_bar(ra.nucleotide_percent, f"{ra.id} composition"), use_container_width=True)
+            with col_b:
+                rb = analyze_sequence(records[idx_b])
+                st.plotly_chart(plot_nucleotide_bar(rb.nucleotide_percent, f"{rb.id} composition"), use_container_width=True)
 
-        st.subheader("Pairwise alignment")
-        aln = pairwise_align(records[idx_a], records[idx_b])
-        render_alignment(aln)
+            st.subheader("Pairwise alignment")
+            aln = pairwise_align(records[idx_a], records[idx_b])
+            render_alignment(aln)
 
-        st.subheader("GC comparison")
-        fig = go.Figure()
-        for rec in (records[idx_a], records[idx_b]):
-            pts = sliding_gc(str(rec.seq).upper().replace("U", "T"))
-            df = pd.DataFrame(pts, columns=["Position", "GC %"])
-            fig.add_trace(
-                go.Scatter(x=df["Position"], y=df["GC %"], mode="lines", name=rec.id)
-            )
-        fig.update_layout(height=400, title="Sliding-window GC — both sequences")
-        st.plotly_chart(fig, use_container_width=True)
+            st.subheader("GC comparison")
+            fig = go.Figure()
+            for rec in (records[idx_a], records[idx_b]):
+                pts = sliding_gc(str(rec.seq).upper().replace("U", "T"))
+                df = pd.DataFrame(pts, columns=["Position", "GC %"])
+                fig.add_trace(
+                    go.Scatter(x=df["Position"], y=df["GC %"], mode="lines", name=rec.id)
+                )
+            fig.update_layout(height=400, title="Sliding-window GC — both sequences")
+            st.plotly_chart(fig, use_container_width=True)
+
+    with tab2:
+        st.subheader("About OmniSyn")
+        st.markdown(
+            f"""
+            **OmniSyn** is an open-source computational framework designed to streamline and automate biological sequence analysis workflows.
+            
+            * **Omni** *(Latin for "all" or "universal")*: Represents the integration of multiple analytical approaches into a unified environment.
+            * **Syn** *(Inspired by synthesis and synthetic biology)*: Reflects the focus on engineered biological systems, genomics, and metagenomics workflows.
+            
+            ### Inspiration & Vision
+            The project emerged from an academic interest in forensic biology and genomics—specifically how molecular data can act as definitive evidence to decode complex patterns. 
+            OmniSyn serves as an educational and prototyping platform built to bridge the gap between computational tools and biological research.
+            """
+        )
 
 
 if __name__ == "__main__":
