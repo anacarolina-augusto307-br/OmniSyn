@@ -12,6 +12,22 @@ import streamlit as st
 from Bio.SeqRecord import SeqRecord
 
 from omnisyn_meta import PROJECT_MEANING, PROJECT_NAME, PROJECT_SUBTITLE
+
+st.set_page_config(
+    page_title="OmniSyn",
+    page_icon="🧬",
+    layout="wide"
+)
+
+# LOGO OMNISYN
+col1, col2, col3 = st.columns([1,2,1])
+
+with col2:
+    st.image(
+        "assets/logo_omnisyn_sf.png",
+        width=320
+    )
+
 from analyzer.core import (
     LIMITATIONS,
     analyze_sequence,
