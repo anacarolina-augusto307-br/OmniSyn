@@ -14,11 +14,11 @@ from Bio.SeqRecord import SeqRecord
 from omnisyn_meta import PROJECT_MEANING, PROJECT_NAME, PROJECT_SUBTITLE
 
 from pathlib import Path
+import streamlit as st
 
-logo = Path("assets/logo_omnisyn_sf.png")
-
-st.write("Existe?", logo.exists())
-st.write("Caminho absoluto:", logo.resolve())
+for p in Path(".").rglob("*"):
+    if "logo" in p.name.lower():
+        st.write(p)
 
 from analyzer.core import (
     LIMITATIONS,
