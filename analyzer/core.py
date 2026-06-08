@@ -124,18 +124,26 @@ def _codon_usage(seq: str) -> dict[str, int]:
 
 
 def _reading_frames(seq: Seq) -> dict[str, str]:
+    """Calcula as proteínas para as 6 janelas de leitura (três forward, três reverse)."""
     frames = {}
+    
+    # Sentido Direto (+)
     for frame in range(3):
         offset = frame
         sub = str(seq[offset:])
-        protein = str(sub.translate(table=1, to_stop=False))
+        # CORREÇÃO: Envolvendo a string 'sub' em Seq() para usar o translate do Biopython
+        protein = str(Seq(sub).translate(table=1, to_stop=False))
         frames[f"+{frame + 1}"] = protein[:500]
+        
+    # Sentido Reverso Complementar (-)
     rev = seq.reverse_complement()
     for frame in range(3):
         offset = frame
         sub = str(rev[offset:])
-        protein = str(sub.translate(table=1, to_stop=False))
+        # CORREÇÃO: Envolvendo a string 'sub' em Seq() para usar o translate do Biopython
+        protein = str(Seq(sub).translate(table=1, to_stop=False))
         frames[f"-{frame + 1}"] = protein[:500]
+        
     return frames
 
 
