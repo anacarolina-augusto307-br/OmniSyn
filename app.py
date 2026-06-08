@@ -20,7 +20,7 @@ left, center_col, right = st.columns([1.2,1,1])
 with center_col:
     st.image(
         "assets/logo_omnisyn_sf.png.png",
-        width=220
+        width=240
     )
 
 st.markdown(
