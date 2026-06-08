@@ -2,7 +2,7 @@
 
 PROJECT_NAME = "OmniSyn"
 PROJECT_SUBTITLE = (
-    "End-to-end computational framework for sequencing analysis and synthetic biology workflows."
+    "Computational Framework for Microbial Genomics and Metagenomics."
 )
 PROJECT_MEANING = (
     "a computational framework designed to streamline and automate biological sequence analysis workflows."
