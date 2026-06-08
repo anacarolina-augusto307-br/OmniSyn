@@ -25,7 +25,12 @@ with center_col:
 
 st.markdown(
     """
-    <h1 style="text-align:center;">
+    <h1 style="
+        text-align:center;
+        margin-top:-25px;
+        margin-bottom:0px;
+        font-weight:700;
+    ">
         OmniSyn
     </h1>
     """,
