@@ -15,9 +15,9 @@ from omnisyn_meta import PROJECT_MEANING, PROJECT_NAME, PROJECT_SUBTITLE
 
 
 # Logo Omnisyn centralizada
-col1, col2, col3 = st.columns([1, 2, 1])
+_, center_col, _ = st.columns([1,1,1])
 
-with col2:
+with center_col:
     st.image(
         "assets/logo_omnisyn_sf.png.png",
         width=220
