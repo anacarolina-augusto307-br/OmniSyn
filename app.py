@@ -274,18 +274,60 @@ def render_sequence_analysis(record: SeqRecord) -> None:
             p2.metric("Isoelectric point", props.get("isoelectric_point", 0))
             p3.metric("GRAVY", props.get("gravy", 0))
             p4.metric("Instability index", props.get("instability_index", 0))
-            ss = props.get("secondary_structure")
+            
+            st.divider()
+            
+            ss = props.get("secondary_structure") # Retorna (helix, turn, sheet)
             if ss:
-                fig, ax = plt.subplots(figsize=(5, 3))
-                labels = ["Helix", "Turn", "Sheet"]
-                values = [ss[0], ss[1], ss[2]]
-                ax.bar(labels, values, color=["#14b8a6", "#f59e0b", "#6366f1"])
-                ax.set_ylabel("Fraction")
-                ax.set_title("Predicted secondary structure")
-                st.pyplot(fig)
-                plt.close(fig)
+                col_chart, col_desc = st.columns([3, 2])
+                
+                with col_chart:
+                    # Criação do gráfico "3D" usando barras com profundidade e cores vibrantes
+                    labels = ["Helix", "Turn", "Sheet"]
+                    values = [ss[0], ss[1], ss[2]]
+                    
+                    fig = go.Figure(data=[
+                        go.Bar(
+                            x=labels, 
+                            y=values,
+                            text=[f"{v*100:.1f}%" for v in values],
+                            textposition='auto',
+                            marker=dict(
+                                color=["#14b8a6", "#f59e0b", "#6366f1"],
+                                line=dict(color='#000', width=1)
+                            )
+                        )
+                    ])
+                    
+                    fig.update_layout(
+                        title="Predicted Secondary Structure Fraction",
+                        template="plotly_dark",
+                        height=400,
+                        margin=dict(t=50, b=40),
+                        yaxis=dict(title="Fraction (0 to 1.0)", range=[0, 1])
+                    )
+                    
+                    st.plotly_chart(fig, use_container_width=True)
 
+                with col_desc:
+                    st.markdown("### 🧬 Estrutura Secundária")
+                    
+                    # Lógica da descrição dinâmica baseada nos valores
+                    h_pct = ss[0] * 100
+                    t_pct = ss[1] * 100
+                    s_pct = ss[2] * 100
+                    
+                    st.write(f"**Helix (Hélice-alfa):** Representa **{h_pct:.1f}%**. These are spiral structures common in membrane proteins and structural domains.")
+                    st.write(f"**Sheet (Folha-beta):** Representa **{s_pct:.1f}%**. Formed by lateral hydrogen bonds, they confer rigidity and stability to the protein.")
+                    st.write(f"**Turn (Volta):** Representa **{t_pct:.1f}%**. These are connecting regions that allow the protein chain to change direction.")
+                    
+                    # Dicas/conselhos/observações automáticas
+                    if h_pct > 50:
+                        st.info("💡 This protein has a highly helical profile.")
+                    elif s_pct > 50:
+                        st.info("💡 Predominant profile of beta-sheets (common in fibrous proteins).")
 
+# 330 início da seção da barra lateral
 def main() -> None:
     apply_styles()
     st.markdown(f'<p class="main-header">{PROJECT_NAME}</p>', unsafe_allow_html=True)
@@ -297,7 +339,7 @@ def main() -> None:
     )
 
     with st.sidebar:
-        st.header("Input")
+        st.header("Data Source")
         input_format = st.selectbox(
             "Format",
             ["fasta", "plain", "genbank"],
@@ -309,7 +351,7 @@ def main() -> None:
             help="FASTA, GenBank, or plain sequence text",
         )
         organism_sample = st.selectbox(
-            "Amostra de referência (sample_data)",
+            "Reference Sample",
             ["(nenhuma)"] + list(ORGANISM_SAMPLES.keys()),
             help="Fragmentos reais de GenBank ou demo curta.",
         )
@@ -318,21 +360,21 @@ def main() -> None:
         st.divider()
         st.markdown(f"**Sobre o {PROJECT_NAME}**")
         st.caption(PROJECT_MEANING)
-        with st.expander("Limitações do modelo"):
+        with st.expander("Model Constraints"):
             for note in LIMITATIONS:
                 st.markdown(f"- {note}")
-            st.caption("Detalhes: `LIMITATIONS.md`")
+            st.caption("See `LIMITATIONS.md` for full details")
 
         st.divider()
-        if st.button("Comparar 3 organismos (GC / ORF / códon)"):
-            report_path = Path("sample_data/comparison_report.txt")
+        if st.button("Compare 3 organisms (GC / ORF / Codon)"):
+            report_path = Path("sample_data/comparison_report.txt") #Lembrar de rever a aparência desses termos na interface 
             try:
                 from scripts.compare_organisms import compare
 
                 report_path.write_text(compare(), encoding="utf-8")
-                st.success(f"Relatório gerado: `{report_path}`")
+                st.success(f"Report generated: `{report_path}`")
             except Exception as exc:
-                st.error(f"Não foi possível gerar comparação: {exc}")
+                st.error(f"Failed to generate comparison: {exc}")
 
     if uploaded:
         raw = uploaded.read().decode("utf-8", errors="replace")
@@ -341,10 +383,10 @@ def main() -> None:
             fmt = "genbank"
         elif uploaded.name.lower().endswith((".fa", ".fasta", ".fna")):
             fmt = "fasta"
-    elif organism_sample != "(nenhuma)":
+    elif organism_sample != "(None)":
         sample_path = Path(ORGANISM_SAMPLES[organism_sample])
         if not sample_path.exists():
-            st.error(f"Arquivo não encontrado: {sample_path}")
+            st.error(f"File ot found: {sample_path}")
             st.stop()
         raw = sample_path.read_text(encoding="utf-8")
         fmt = "fasta"
