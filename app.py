@@ -376,20 +376,34 @@ def main() -> None:
             except Exception as exc:
                 st.error(f"Failed to generate comparison: {exc}")
 
-    if uploaded:
-        raw = uploaded.read().decode("utf-8", errors="replace")
-        fmt = input_format
-        if uploaded.name.lower().endswith((".gb", ".gbk")):
-            fmt = "genbank"
-        elif uploaded.name.lower().endswith((".fa", ".fasta", ".fna")):
-            fmt = "fasta"
-    elif organism_sample != "(None)":
-        sample_path = Path(ORGANISM_SAMPLES[organism_sample])
-        if not sample_path.exists():
-            st.error(f"File ot found: {sample_path}")
-            st.stop()
-        raw = sample_path.read_text(encoding="utf-8")
+    #----------- Redefinição de chave em um dicionário agora existente e corrigido - espero! ----------------
+if uploaded:
+    raw = uploaded.read().decode("utf-8", errors="replace")
+    fmt = input_format
+    if uploaded.name.lower().endswith((".gb", ".gbk")):
+        fmt = "genbank"
+    elif uploaded.name.lower().endswith((".fa", ".fasta", ".fna")):
         fmt = "fasta"
+
+# Aqui garantimos que o nome escolhido está DE FATO mapeado nas amostras reais
+elif organism_sample != "(nenhuma)" and organism_sample in ORGANISM_SAMPLES:
+    sample_path = Path(ORGANISM_SAMPLES[organism_sample])
+    if not sample_path.exists():
+        st.error(f"Arquivo não encontrado: {sample_path}")
+        st.stop()
+    raw = sample_path.read_text(encoding="utf-8")
+    fmt = "fasta"
+
+elif use_sample:
+    raw = SAMPLE_FASTA
+    fmt = "fasta"
+
+else:
+    # Caso nenhuma opção da sidebar esteja ativa, a variável 'raw' precisa iniciar vazia
+    # para que a área de texto da aba principal possa capturar a sequência colada.
+    raw = ""
+        # ----- Final da correção. ------
+    #    
     elif use_sample:
         raw = SAMPLE_FASTA
         fmt = "fasta"
