@@ -74,7 +74,7 @@ ORGANISM_SAMPLES = {
     "Bacillus subtilis (soil)": "sample_data/bacillus_subtilis_soil.fasta",
     "Vibrio cholerae (marine)": "sample_data/vibrio_cholerae_marine.fasta",
     "Haloferax volcanii (archaea)": "sample_data/haloferax_volcanii_archaea.fasta",
-    "Short Demo (example.fasta)": "sample_data/example.fasta",
+    "Short Demo": "sample_data/example.fasta",
 }
 
 SAMPLE_FASTA = """>sample_gene
@@ -356,7 +356,7 @@ def main() -> None:
     apply_styles()
     
     with st.sidebar:
-        st.header("Data Source Configuration")
+        st.header("Data Source")
         input_format = st.selectbox(
             "Sequence Format",
             ["fasta", "plain", "genbank"],
@@ -372,7 +372,7 @@ def main() -> None:
             ["(None)"] + list(ORGANISM_SAMPLES.keys()),
             help="Select verified reference fragments from genomic data repositories.",
         )
-        use_sample = st.checkbox("Enable short sandbox demo (example.fasta)", value=False)
+        use_sample = st.checkbox("Enable short sandbox demo", value=False)
 
         st.divider()
         st.markdown(f"**About {PROJECT_NAME}**")
