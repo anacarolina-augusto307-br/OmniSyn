@@ -27,7 +27,7 @@ st.markdown(
     """
     <h1 style="
         text-align:center;
-        margin-top:-25px;
+        margin-top:-35px;
         margin-bottom:0px;
         font-weight:700;
     ">
