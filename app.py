@@ -47,7 +47,28 @@ st.markdown(
 )
 
 
+# Abas de organização da página
+tab1, tab2 = st.tabs(["🧬 Sequence Analyzer", "📄 Project Documentation"])
 
+with tab1:
+    st.subheader("Analyze Biological Sequences")
+    
+    # Container com borda para a área de trabalho
+    with st.container(border=True):
+        sequence_input = st.text_area(
+            "Paste sequence(s) here:", 
+            placeholder=">seq1\nATGAAACGC...", 
+            height=150
+        )
+        
+        run_analysis = st.button("Run Analysis", type="primary") # Botão com a cor primária (Verde)
+
+with tab2:
+    st.subheader("About the Project")
+    st.write("Aqui você pode colocar a história do projeto, inspiração em forense, etc.")
+
+
+#Sem ligação direta com a interface, portanto, sem alterações no momento.
 from analyzer.core import (
     LIMITATIONS,
     analyze_sequence,
