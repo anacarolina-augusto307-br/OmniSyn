@@ -13,10 +13,35 @@ from Bio.SeqRecord import SeqRecord
 
 from omnisyn_meta import PROJECT_MEANING, PROJECT_NAME, PROJECT_SUBTITLE
 
-st.image(
-    "assets/logo_omnisyn_sf.png.png",
-    width=320
+
+# Logo Omnisyn centralizada
+col1, col2, col3 = st.columns([1, 2, 1])
+
+with col2:
+    st.image(
+        "assets/logo_omnisyn_sf.png.png",
+        width=250
+    )
+
+st.markdown(
+    """
+    <h1 style="text-align:center;">
+        OmniSyn
+    </h1>
+    """,
+    unsafe_allow_html=True
 )
+
+st.markdown(
+    """
+    <p style="text-align:center; font-size:18px;">
+        Computational Framework for Synthetic Biology
+    </p>
+    """,
+    unsafe_allow_html=True
+)
+
+
 
 from analyzer.core import (
     LIMITATIONS,
