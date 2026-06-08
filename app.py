@@ -35,7 +35,7 @@ st.markdown(
 st.markdown(
     """
     <p style="text-align:center; font-size:18px;">
-        Computational Framework for Microbial Genomics and Exploratory Metagenomics
+        Computational Framework for Microbial Genomics and Metagenomics
     </p>
     """,
     unsafe_allow_html=True
