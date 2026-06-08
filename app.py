@@ -15,7 +15,7 @@ from omnisyn_meta import PROJECT_MEANING, PROJECT_NAME, PROJECT_SUBTITLE
 
 
 # Logo Omnisyn centralizada
-left, center_col, right = st.columns([1.3,1,1])
+left, center_col, right = st.columns([1.2,1,1])
 
 with center_col:
     st.image(
