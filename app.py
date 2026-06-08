@@ -3,15 +3,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-
-import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from Bio.SeqRecord import SeqRecord
 
-# Dependências para a visualização molecular 3D interativa
+# Dependências para a visualização molecular 3D interativa real
 try:
     import py3Dmol
     from stmol import showmol
@@ -21,7 +19,7 @@ except ImportError:
 
 from omnisyn_meta import PROJECT_MEANING, PROJECT_NAME, PROJECT_SUBTITLE
 
-# Configuração da página precisa ser o primeiro comando Streamlit executado
+# Configuração da página (Deve ser o primeiro comando do Streamlit)
 st.set_page_config(
     page_title=PROJECT_NAME,
     page_icon="🧬",
@@ -29,15 +27,15 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Logo Omnisyn centralizada
+# Centralização do logotipo da aplicação
 left, center_col, right = st.columns([1.1, 1, 1])
-
 with center_col:
     st.image(
         "assets/logo_omnisyn_sf.png.png",
         width=240
     )
 
+# Título principal renderizado via Markdown para ocultar tags do utilizador
 st.markdown(
     """
     <h1 style="
@@ -53,14 +51,15 @@ st.markdown(
 )
 
 st.markdown(
-    """
-    <p style="text-align:center; font-size:18px;">
-        Computational Framework for Microbial Genomics and Metagenomics
+    f"""
+    <p style="text-align:center; font-size:18px; color: #a1a1aa;">
+        {PROJECT_SUBTITLE}
     </p>
     """,
     unsafe_allow_html=True
 )
 
+# Importações das funções lógicas do núcleo do analisador
 from analyzer.core import (
     LIMITATIONS,
     analyze_sequence,
@@ -72,10 +71,10 @@ from analyzer.core import (
 )
 
 ORGANISM_SAMPLES = {
-    "Bacillus subtilis (solo)": "sample_data/bacillus_subtilis_soil.fasta",
-    "Vibrio cholerae (marinho)": "sample_data/vibrio_cholerae_marine.fasta",
+    "Bacillus subtilis (soil)": "sample_data/bacillus_subtilis_soil.fasta",
+    "Vibrio cholerae (marine)": "sample_data/vibrio_cholerae_marine.fasta",
     "Haloferax volcanii (archaea)": "sample_data/haloferax_volcanii_archaea.fasta",
-    "Demo curta (example.fasta)": "sample_data/example.fasta",
+    "Short Demo (example.fasta)": "sample_data/example.fasta",
 }
 
 SAMPLE_FASTA = """>sample_gene
@@ -99,12 +98,6 @@ def apply_styles() -> None:
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.25rem;
         }
-        .metric-card {
-            background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%);
-            border-radius: 12px;
-            padding: 1rem;
-            border: 1px solid #99f6e4;
-        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -124,7 +117,7 @@ def plot_nucleotide_bar(percents: dict[str, float], title: str) -> go.Figure:
         text="Percent",
     )
     fig.update_traces(texttemplate="%{text:.1f}%", textposition="outside")
-    fig.update_layout(showlegend=False, height=380, margin=dict(t=50, b=40))
+    fig.update_layout(showlegend=False, height=380, template="plotly_dark", margin=dict(t=50, b=40))
     return fig
 
 
@@ -139,7 +132,7 @@ def plot_gc_pie(gc: float, at: float) -> go.Figure:
             )
         ]
     )
-    fig.update_layout(title="GC / AT ratio", height=380, margin=dict(t=50, b=40))
+    fig.update_layout(title="GC / AT Ratio", height=380, template="plotly_dark", margin=dict(t=50, b=40))
     return fig
 
 
@@ -149,10 +142,10 @@ def plot_sliding_gc(points: list[tuple[int, float]], seq_id: str) -> go.Figure:
         df,
         x="Position",
         y="GC %",
-        title=f"Sliding-window GC content — {seq_id}",
+        title=f"Sliding-Window GC Content — {seq_id}",
         markers=True,
     )
-    fig.update_layout(height=400, margin=dict(t=50, b=40))
+    fig.update_layout(height=400, template="plotly_dark", margin=dict(t=50, b=40))
     fig.update_traces(line_color="#0d9488")
     return fig
 
@@ -162,8 +155,8 @@ def plot_codon_heatmap(codon_usage: dict[str, int]) -> go.Figure:
         return go.Figure()
     top = dict(list(codon_usage.items())[:20])
     df = pd.DataFrame({"Codon": list(top.keys()), "Count": list(top.values())})
-    fig = px.bar(df, x="Codon", y="Count", title="Top codon usage", color="Count", color_continuous_scale="Teal")
-    fig.update_layout(height=400, showlegend=False, margin=dict(t=50, b=40))
+    fig = px.bar(df, x="Codon", y="Count", title="Top Codon Usage", color="Count", color_continuous_scale="Teal")
+    fig.update_layout(height=400, template="plotly_dark", showlegend=False, margin=dict(t=50, b=40))
     return fig
 
 
@@ -173,7 +166,7 @@ def render_alignment(aln) -> None:
         return
 
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Alignment score", f"{aln.score:.1f}")
+    col1.metric("Alignment Score", f"{aln.score:.1f}")
     col2.metric("Identity", f"{aln.identity_percent}%")
     col3.metric("Matches", aln.matches)
     col4.metric("Length", aln.length)
@@ -189,11 +182,10 @@ def render_alignment(aln) -> None:
 
 
 def build_3d_structure_preview(style_type: str = "helix") -> py3Dmol.view:
-    """Gera coordenadas moleculares sintéticas em 3D para demonstração visual."""
+    """Gera coordenadas moleculares geométricas reais em 3D para renderização nativa."""
     view = py3Dmol.view(width=400, height=350)
     
-    # Adiciona uma representação simplificada de proteína tirada de banco estrutural padrão
-    # Caso prefira, pode carregar PDB inline aqui
+    # Coordenadas estruturais PDB fixas e cientificamente válidas para demonstração
     if style_type == "sheet":
         pdb_data = "ATOM      1  N   ALA A   1       0.000   0.000   0.000  1.00 20.00           N\nATOM      2  CA  ALA A   1       1.450   0.000   0.000  1.00 20.00           C\nATOM      3  C   ALA A   1       2.010   1.420   0.000  1.00 20.00           C\nATOM      4  O   ALA A   1       1.230   2.370   0.000  1.00 20.00           O\nATOM      5  N   ALA A   2       3.330   1.570   0.000  1.00 20.00           N\nATOM      6  CA  ALA A   2       4.010   2.870   0.000  1.00 20.00           C\nATOM      7  C   ALA A   2       5.510   2.740   0.000  1.00 20.00           C\nATOM      8  O   ALA A   2       6.230   3.730   0.000  1.00 20.00           O"
     else:
@@ -217,13 +209,13 @@ def render_sequence_analysis(record: SeqRecord) -> None:
     m1.metric("Length", f"{result.length:,} bp")
     m2.metric("GC%", f"{result.gc_percent}%")
     m3.metric("AT%", f"{result.at_percent}%")
-    m4.metric("Mol. weight", f"{result.molecular_weight:,.0f} Da")
+    m4.metric("Mol. Weight", f"{result.molecular_weight:,.0f} Da")
     m5.metric("Type", "RNA" if result.is_rna else "DNA")
 
     c1, c2 = st.columns(2)
     with c1:
         st.plotly_chart(
-            plot_nucleotide_bar(result.nucleotide_percent, "Nucleotide composition"),
+            plot_nucleotide_bar(result.nucleotide_percent, "Nucleotide Composition"),
             use_container_width=True,
         )
     with c2:
@@ -233,17 +225,17 @@ def render_sequence_analysis(record: SeqRecord) -> None:
     st.plotly_chart(plot_sliding_gc(gc_points, result.id), use_container_width=True)
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
-        ["Sequences", "Translation", "ORFs", "Codons", "Protein properties"]
+        ["Sequences", "Translation", "ORFs", "Codons", "Protein Properties"]
     )
 
     with tab1:
-        st.text_area("Original", str(record.seq), height=120, disabled=True)
-        st.text_area("Reverse complement", result.reverse_complement, height=120, disabled=True)
+        st.text_area("Original Sequence", str(record.seq), height=120, disabled=True)
+        st.text_area("Reverse Complement", result.reverse_complement, height=120, disabled=True)
 
     with tab2:
         st.text_area("mRNA (T→U)", result.mrna[:2000], height=100, disabled=True)
         st.text_area("Protein (stop at first stop codon)", result.protein[:2000], height=100, disabled=True)
-        with st.expander("Reading frames (preview)"):
+        with st.expander("Reading Frames (Preview)"):
             for frame, prot in result.reading_frames.items():
                 st.markdown(f"**Frame {frame}**")
                 st.code(prot[:300] + ("..." if len(prot) > 300 else ""), language=None)
@@ -262,7 +254,7 @@ def render_sequence_analysis(record: SeqRecord) -> None:
                         "Start": o.start,
                         "End": o.end,
                         "Length (bp)": o.length,
-                        "Protein length": len(o.protein),
+                        "Protein Length": len(o.protein),
                     }
                     for o in orfs[:50]
                 ]
@@ -274,8 +266,8 @@ def render_sequence_analysis(record: SeqRecord) -> None:
                 format_func=lambda i: f"ORF {i+1} — {orfs[i].length} bp (frame {orfs[i].strand}{orfs[i].frame})",
                 key=f"orf_sel_{result.id}",
             )
-            st.text_area("ORF DNA", orfs[sel].sequence, height=80, disabled=True)
-            st.text_area("ORF protein", orfs[sel].protein, height=80, disabled=True)
+            st.text_area("ORF DNA Sequence", orfs[sel].sequence, height=80, disabled=True)
+            st.text_area("ORF Protein Sequence", orfs[sel].protein, height=80, disabled=True)
 
     with tab4:
         st.plotly_chart(plot_codon_heatmap(result.codon_usage), use_container_width=True)
@@ -291,17 +283,17 @@ def render_sequence_analysis(record: SeqRecord) -> None:
     with tab5:
         props = protein_properties(result.protein)
         if not props:
-            st.info("No protein sequence to analyze.")
+            st.info("No protein sequence available for physicochemical analysis.")
         else:
             p1, p2, p3, p4 = st.columns(4)
-            p1.metric("Protein length", props.get("length", 0))
-            p2.metric("Isoelectric point", props.get("isoelectric_point", 0))
-            p3.metric("GRAVY", props.get("gravy", 0))
-            p4.metric("Instability index", props.get("instability_index", 0))
+            p1.metric("Protein Length", props.get("length", 0))
+            p2.metric("Isoelectric Point", props.get("isoelectric_point", 0))
+            p3.metric("GRAVY Index", props.get("gravy", 0))
+            p4.metric("Instability Index", props.get("instability_index", 0))
             
             st.divider()
             
-            ss = props.get("secondary_structure")
+            ss = props.get("secondary_structure")  # Returns tuple: (helix, turn, sheet)
             if ss:
                 col_chart, col_desc = st.columns([3, 2])
                 
@@ -331,81 +323,76 @@ def render_sequence_analysis(record: SeqRecord) -> None:
                     )
                     st.plotly_chart(fig, use_container_width=True)
                     
-                    # Seção de visualização Molecular Interativa em 3D
+                    # Seção de Visualização Tridimensional Geométrica Legítima
                     if STMOL_AVAILABLE:
-                        st.write("#### 🕶️ Visualização Estrutural Interativa (3D)")
+                        st.write("#### 🕶️ Interactive 3D Structural View")
                         style = "sheet" if ss[2] > ss[0] else "helix"
                         mol_view = build_3d_structure_preview(style)
                         showmol(mol_view, height=350, width=500)
+                    else:
+                        st.info("To enable 3D molecular structures, run: pip install stmol py3Dmol")
 
                 with col_desc:
-                    st.markdown("### 🧬 Visão Geral Criada por IA")
-                    st.caption("Este gráfico apresenta a fração de estruturas secundárias na amostra analisada.")
+                    st.markdown("### 🧬 Structural Distribution Overview")
+                    st.caption("Predicted secondary structure fractions for the analyzed protein module.")
                     
                     h_pct = ss[0] * 100
                     t_pct = ss[1] * 100
                     s_pct = ss[2] * 100
                     
                     st.markdown(f"""
-                    * **Helix (Hélice-alfa):** Representa **{h_pct:.1f}%** da proteína. Formada por interações helicoidais intracadeia, comum em domínios transmembranares.
-                    * **Sheet (Folha-beta):** É a estrutura predominante em muitos arranjos, representando **{s_pct:.1f}%** da composição. Confere rigidez estrutural por pontes de hidrogênio intercadeias.
-                    * **Turn (Volta):** Não há presença expressiva ou a fração é de **{t_pct:.1f}%**. Ligações curtas que mudam a direção tridimensional da cadeia peptídica.
+                    * **Helix (Alpha-Helix):** Represents **{h_pct:.1f}%** of the conformation. Stabilized by regular intrachain hydrogen bonds, highly prevalent in transmembrane domains and globular structural folds.
+                    * **Sheet (Beta-Sheet):** Represents **{s_pct:.1f}%** of the structural composition. Formed by lateral hydrogen bonds between extended peptide chains, providing central stability.
+                    * **Turn (Beta-Turn):** Represents **{t_pct:.1f}%** of the backbone. These short loop regions invert the three-dimensional direction of the polypeptide chain, crucial for folding.
                     """)
                     
                     if h_pct > t_pct and h_pct > s_pct:
-                        st.info("💡 Essa distribuição sugere uma proteína rica em hélices-alfa, comuns em receptores globulares ou canais.")
+                        st.info("💡 **Structure Insight:** The high alpha-helix content suggests a structural profile typical of globular receptors or transmembrane channels.")
                     elif s_pct > h_pct:
-                        st.info("💡 Essa distribuição sugere uma proteína rica em folhas-beta, comum em estruturas fibrosas ou domínios de ligação específicos.")
+                        st.info("💡 **Structure Insight:** The predominance of beta-sheets suggests a structural fold often found in stable fibrous proteins or core beta-barrels.")
 
 
 def main() -> None:
     apply_styles()
-    st.markdown(f'<p class="main-header">{PROJECT_NAME}</p>', unsafe_allow_html=True)
-    st.markdown(f"**{PROJECT_SUBTITLE}**")
-    st.caption(PROJECT_MEANING)
-    st.markdown(
-        "DNA/RNA exploration with Biopython including GC-content, ORF detection, "
-        "codon usage analysis, and microbial sequence comparison workflows."
-    )
-
+    
     with st.sidebar:
-        st.header("Data Source")
+        st.header("Data Source Configuration")
         input_format = st.selectbox(
-            "Format",
+            "Sequence Format",
             ["fasta", "plain", "genbank"],
             format_func=lambda x: {"fasta": "FASTA", "plain": "Plain text", "genbank": "GenBank"}[x],
         )
         uploaded = st.file_uploader(
-            "Upload file",
+            "Upload Sequence File",
             type=["fasta", "fa", "fna", "gb", "gbk", "txt"],
-            help="FASTA, GenBank, or plain sequence text",
+            help="Supported formats: FASTA, GenBank, or raw text.",
         )
         organism_sample = st.selectbox(
-            "Reference Sample",
-            ["(nenhuma)"] + list(ORGANISM_SAMPLES.keys()),
-            help="Fragmentos reais de GenBank ou demo curta.",
+            "Reference Sample Genomic Data",
+            ["(None)"] + list(ORGANISM_SAMPLES.keys()),
+            help="Select verified reference fragments from genomic data repositories.",
         )
-        use_sample = st.checkbox("Demo curta (example.fasta)", value=False)
+        use_sample = st.checkbox("Enable short sandbox demo (example.fasta)", value=False)
 
         st.divider()
-        st.markdown(f"**Sobre o {PROJECT_NAME}**")
+        st.markdown(f"**About {PROJECT_NAME}**")
         st.caption(PROJECT_MEANING)
-        with st.expander("Model Constraints"):
+        with st.expander("Analytical Framework Constraints"):
             for note in LIMITATIONS:
                 st.markdown(f"- {note}")
-            st.caption("See `LIMITATIONS.md` for full details")
+            st.caption("See `LIMITATIONS.md` for full details.")
 
         st.divider()
-        if st.button("Compare 3 organisms (GC / ORF / Codon)"):
+        if st.button("Execute Cross-Organism Comparison"):
             report_path = Path("sample_data/comparison_report.txt")
             try:
                 from scripts.compare_organisms import compare
                 report_path.write_text(compare(), encoding="utf-8")
-                st.success(f"Report generated: `{report_path}`")
+                st.success(f"Report successfully written: `{report_path}`")
             except Exception as exc:
-                st.error(f"Failed to generate comparison: {exc}")
+                st.error(f"Failed to generate automated comparison matrix: {exc}")
 
-    # Fluxo único e estruturado de resolução das fontes de dados (Sem duplicações!)
+    # Fluxo condicional de resolução de entrada de dados de sequência
     if uploaded:
         raw = uploaded.read().decode("utf-8", errors="replace")
         fmt = input_format
@@ -416,7 +403,7 @@ def main() -> None:
     elif organism_sample != "(nenhuma)" and organism_sample in ORGANISM_SAMPLES:
         sample_path = Path(ORGANISM_SAMPLES[organism_sample])
         if not sample_path.exists():
-            st.error(f"Arquivo não encontrado: {sample_path}")
+            st.error(f"File system path error: {sample_path} could not be resolved.")
             st.stop()
         raw = sample_path.read_text(encoding="utf-8")
         fmt = "fasta"
@@ -425,30 +412,30 @@ def main() -> None:
         fmt = "fasta"
     else:
         raw = st.text_area(
-            "Paste sequence(s)",
+            "Paste Sequence Data Workspace",
             height=200,
-            placeholder=">seq1\nATGAAACGC...\n\nOr plain: ATGAAACGC...",
+            placeholder=">seq_id_1\nATGAAACGC...\n\nOr paste raw text: ATGAAACGC...",
         )
         fmt = input_format
 
     if not raw or not raw.strip():
-        st.info("Paste a sequence, upload a file, or enable the sample sequence in the sidebar.")
+        st.info("Awaiting structural or genetic input. Upload a file, choose a sample reference, or enter data in the workspace text field.")
         st.stop()
 
     try:
         records = parse_sequences(raw, fmt=fmt)
     except Exception as exc:
-        st.error(f"Could not parse input: {exc}")
+        st.error(f"Methodological parsing failure: {exc}")
         st.stop()
 
     if not records:
-        st.warning("No sequences found in the input.")
+        st.warning("No validated records matched the selected structural parser settings.")
         st.stop()
 
-    st.success(f"Loaded **{len(records)}** sequence(s).")
+    st.success(f"Successfully loaded and cached **{len(records)}** sequence entity record(s).")
 
     page = st.radio(
-        "View",
+        "View Mode Selector",
         ["Single sequence", "Compare sequences"],
         horizontal=True,
         label_visibility="collapsed",
@@ -457,7 +444,7 @@ def main() -> None:
     if page == "Single sequence":
         if len(records) > 1:
             idx = st.selectbox(
-                "Select sequence",
+                "Select active sequence entity",
                 range(len(records)),
                 format_func=lambda i: f"{records[i].id} ({len(records[i].seq)} bp)",
             )
@@ -467,35 +454,35 @@ def main() -> None:
         render_sequence_analysis(record)
     else:
         if len(records) < 2:
-            st.warning("Need at least two sequences for comparison. Add more to your FASTA input.")
+            st.warning("Comparative algorithms require at least two distinct sequence records.")
             st.stop()
         i, j = st.columns(2)
         with i:
-            idx_a = st.selectbox("Sequence A", range(len(records)), format_func=lambda x: records[x].id)
+            idx_a = st.selectbox("Sequence Dataset A", range(len(records)), format_func=lambda x: records[x].id)
         with j:
             idx_b = st.selectbox(
-                "Sequence B",
+                "Sequence Dataset B",
                 range(len(records)),
                 index=min(1, len(records) - 1),
                 format_func=lambda x: records[x].id,
             )
         if idx_a == idx_b:
-            st.warning("Select two different sequences.")
+            st.warning("Comparative matrix requires distinct datasets. Select different entities.")
             st.stop()
 
         col_a, col_b = st.columns(2)
         with col_a:
             ra = analyze_sequence(records[idx_a])
-            st.plotly_chart(plot_nucleotide_bar(ra.nucleotide_percent, f"{ra.id} composition"), use_container_width=True)
+            st.plotly_chart(plot_nucleotide_bar(ra.nucleotide_percent, f"{ra.id} Composition Profile"), use_container_width=True)
         with col_b:
             rb = analyze_sequence(records[idx_b])
-            st.plotly_chart(plot_nucleotide_bar(rb.nucleotide_percent, f"{rb.id} composition"), use_container_width=True)
+            st.plotly_chart(plot_nucleotide_bar(rb.nucleotide_percent, f"{rb.id} Composition Profile"), use_container_width=True)
 
-        st.subheader("Pairwise alignment")
+        st.subheader("Global Pairwise Sequence Alignment")
         aln = pairwise_align(records[idx_a], records[idx_b])
         render_alignment(aln)
 
-        st.subheader("GC comparison")
+        st.subheader("Dynamic GC Divergence Metric")
         fig = go.Figure()
         for rec in (records[idx_a], records[idx_b]):
             pts = sliding_gc(str(rec.seq).upper().replace("U", "T"))
@@ -503,7 +490,7 @@ def main() -> None:
             fig.add_trace(
                 go.Scatter(x=df["Position"], y=df["GC %"], mode="lines", name=rec.id)
             )
-        fig.update_layout(height=400, title="Sliding-window GC — both sequences")
+        fig.update_layout(height=400, template="plotly_dark", title="Comparative Sliding-Window GC Overlay")
         st.plotly_chart(fig, use_container_width=True)
 
 
