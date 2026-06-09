@@ -10,14 +10,16 @@ import streamlit as st
 from Bio.SeqRecord import SeqRecord
 
 # Dependências para a visualização molecular 3D interativa real
+    # Tentativa 1: corrigindo erro da frase -> To enable 3D molecular structures, run: pip install stmol py3Dmol <-
 try:
     import py3Dmol
     from stmol import showmol
     STMOL_AVAILABLE = True
-except ImportError:
-    STMOL_AVAILABLE = False
 
-from omnisyn_meta import PROJECT_MEANING, PROJECT_NAME, PROJECT_SUBTITLE
+except Exception as e:
+    STMOL_AVAILABLE = False
+    import streamlit as st
+    st.error(f"3D Import Error: {e}")
 
 # Configuração da página (Deve ser o primeiro comando do Streamlit)
 st.set_page_config(
