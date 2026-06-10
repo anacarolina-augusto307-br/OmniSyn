@@ -3,14 +3,21 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+
 from Bio.SeqRecord import SeqRecord
 
-# Dependências para a visualização molecular 3D interativa real
-    # Tentativa 1: corrigindo erro da frase -> To enable 3D molecular structures, run: pip install stmol py3Dmol <-
+from omnisyn_meta import (
+    PROJECT_MEANING,
+    PROJECT_NAME,
+    PROJECT_SUBTITLE,
+)
+
+# Configuração do código para vizualização molecular 3D -> teste 4
 try:
     import py3Dmol
     from stmol import showmol
@@ -18,10 +25,9 @@ try:
 
 except Exception as e:
     STMOL_AVAILABLE = False
-    import streamlit as st
     st.error(f"3D Import Error: {e}")
 
-# Configuração da página (Deve ser o primeiro comando do Streamlit)
+# Configuração da página (deve ser o primeiro comando Streamlit)
 st.set_page_config(
     page_title=PROJECT_NAME,
     page_icon="🧬",
@@ -29,15 +35,16 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Centralização do logotipo da aplicação
+# Logo da omnisyn
 left, center_col, right = st.columns([1.1, 1, 1])
+
 with center_col:
     st.image(
         "assets/logo_omnisyn_sf.png.png",
         width=240
     )
 
-# Título principal renderizado via Markdown para ocultar tags do utilizador
+# Título da Omnisyn
 st.markdown(
     """
     <h1 style="
@@ -52,9 +59,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Subtítulo da Omnisyn
 st.markdown(
     f"""
-    <p style="text-align:center; font-size:18px; color: #a1a1aa;">
+    <p style="text-align:center; font-size:18px; color:#a1a1aa;">
         {PROJECT_SUBTITLE}
     </p>
     """,
