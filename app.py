@@ -40,7 +40,7 @@ left, center_col, right = st.columns([1.1, 1, 1])
 
 with center_col:
     st.image(
-        "assets/logo_omnisyn_sf.png.png",
+        "assets/logo_omnisyn_sf.png.png", #Sim, o nome da logo está estranho assim porque me confundi na hora de salvar o arquivo e o png duplicou
         width=240
     )
 
@@ -97,6 +97,8 @@ AAACGCATTAGCACCACCATTACCACCACCATCACCATTACCACATG
 
 
 def apply_styles() -> None:
+    #Adicionando estilo custumizado na header do projeto + CSS
+
     st.markdown(
         """
         <style>
@@ -159,16 +161,32 @@ def plot_sliding_gc(points: list[tuple[int, float]], seq_id: str) -> go.Figure:
     fig.update_traces(line_color="#0d9488")
     return fig
 
-
+#Receptor do dicionário de códons, seguindo para a sua verificação
 def plot_codon_heatmap(codon_usage: dict[str, int]) -> go.Figure:
-    if not codon_usage:
+    if len(codon_usage) == 0:
         return go.Figure()
-    top = dict(list(codon_usage.items())[:20])
-    df = pd.DataFrame({"Codon": list(top.keys()), "Count": list(top.values())})
-    fig = px.bar(df, x="Codon", y="Count", title="Top Codon Usage", color="Count", color_continuous_scale="Teal")
-    fig.update_layout(height=400, template="plotly_dark", showlegend=False, margin=dict(t=50, b=40))
-    return fig
 
+    top_codons = list(codon_usage.items())[:20]
+
+    df = pd.DataFrame(top_codons, columns=["Codon", "Count"])
+
+    fig = px.bar(
+        df,
+        x="Codon",
+        y="Count",
+        title="Top Codon Usage",
+        color="Count",#Colore as barras e deixa o fundo azul escuro
+        color_continuous_scale="Teal",
+    )
+
+    fig.update_layout(
+        height=400,
+        template="plotly_dark",
+        showlegend=False,
+        margin=dict(t=50, b=40),
+    )
+
+    return fig
 
 def render_alignment(aln) -> None:
     if aln is None:
