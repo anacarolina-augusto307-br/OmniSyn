@@ -18,6 +18,10 @@ from omnisyn_meta import (
 )
 
 # Configuração do código para vizualização molecular 3D -> teste 4
+    # o py3Dmol e o stmol foram adicionados no arquivo requirements desse github
+    # O teste 12 apresentou menor inconsistência no kaggle, mas devido a erros de escrita falhou na importação. LEMBRAR QUE PYTHON É EXTREMAMENTE SENSÍVEL
+    # O teste 19 não apareceu mais erros de escrita até então - eu acho -, mas tive problema com o efeito cascata. ATENÇÃO AOS ESPAÇOS E PARÁGRAFOS DO PYTHON
+    # Tentativa 27 com sucesso
 try:
     import py3Dmol
     from stmol import showmol
@@ -36,6 +40,8 @@ st.set_page_config(
 )
 
 # Logo da omnisyn
+# Melhorar a qualidade da logo em breve, atualmente está em 400x400 - feita pelo remove.bg gratuito
+# Atualmente o "right = st.columns([1.1, 1, 1])" funciona pq a aba está evidente na tela, se ela fechar a logo fica torta
 left, center_col, right = st.columns([1.1, 1, 1])
 
 with center_col:
@@ -45,6 +51,7 @@ with center_col:
     )
 
 # Título da Omnisyn
+# Para modificar a frase do título - acho improvável, mas enfim - trocar no arquivo omnisyn_meta.py desse github
 st.markdown(
     """
     <h1 style="
@@ -60,6 +67,7 @@ st.markdown(
 )
 
 # Subtítulo da Omnisyn
+# Para modificar a frase do subtítulo trocar no arquivo omnisyn_meta.py desse github
 st.markdown(
     f"""
     <p style="text-align:center; font-size:18px; color:#a1a1aa;">
@@ -465,7 +473,7 @@ def main() -> None:
         raw = st.text_area(
             "Paste Sequence Data Workspace",
             height=200,
-            placeholder=">seq_id_1\nATGAAACGC...\n\nOr paste raw text: ATGAAACGC...",
+            placeholder=">seq_1\nATGAAACGC...\n\nOr paste raw text: ATGAAACGC...",
         )
         fmt = input_format
 
