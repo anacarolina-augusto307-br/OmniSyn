@@ -539,22 +539,29 @@ def main() -> None:
         with col_b:
             rb = analyze_sequence(records[idx_b])
             st.plotly_chart(plot_nucleotide_bar(rb.nucleotide_percent, f"{rb.id} Composition Profile"), use_container_width=True)
-
+            
+# Esse bloco deve responder a grande questão: "Quão parecidas são estas duas bactérias/genes e onde é que a estrutura delas muda de comportamento?"
+    # Serve apenas quando existe mais de uma sequência para o analizador interpretar
+        #Olhar a questão da escrita dos genes - URGENTE!!!
         st.subheader("Global Pairwise Sequence Alignment")
-        aln = pairwise_align(records[idx_a], records[idx_b])
-        render_alignment(aln)
+        aln = pairwise_align(records[idx_a], records[idx_b]) # Identificar se as sequencias são idênticas, suas mutações e os gaps
+        render_alignment(aln) # Tem que mostrar na interface os indices de score, % de semelhança e as barrinhas de ligação em posições iguais
 
         st.subheader("Dynamic GC Divergence Metric")
         fig = go.Figure()
         for rec in (records[idx_a], records[idx_b]):
-            pts = sliding_gc(str(rec.seq).upper().replace("U", "T"))
+            pts = sliding_gc(str(rec.seq).upper().replace("U", "T")) #Janelas de avaliação 1-50/2-51 (roxo) __ Funcionar com RNA (azul)
             df = pd.DataFrame(pts, columns=["Position", "GC %"])
+           # Desenha as fitas linkando com a posição as % de GC
             fig.add_trace(
                 go.Scatter(x=df["Position"], y=df["GC %"], mode="lines", name=rec.id)
             )
-        fig.update_layout(height=400, template="plotly_dark", title="Comparative Sliding-Window GC Overlay")
-        st.plotly_chart(fig, use_container_width=True)
 
+        # Configurações do gráfico (tamanho, tema escuro e título principal)
+        fig.update_layout(height=400, template="plotly_dark", title="Comparative Sliding-Window GC Overlay")
+
+        # Gráfico ajustado 
+        st.plotly_chart(fig, use_container_width=True)
 
 if __name__ == "__main__":
     main()
