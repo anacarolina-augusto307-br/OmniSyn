@@ -462,7 +462,7 @@ def main() -> None:
             fmt = "genbank"
         elif uploaded.name.lower().endswith((".fa", ".fasta", ".fna")):
             fmt = "fasta"
-    elif organism_sample != "(nenhuma)" and organism_sample in ORGANISM_SAMPLES:
+    elif organism_sample != "(None)" and organism_sample in ORGANISM_SAMPLES:
         sample_path = Path(ORGANISM_SAMPLES[organism_sample])
         if not sample_path.exists():
             st.error(f"File system path error: {sample_path} could not be resolved.")
@@ -481,7 +481,7 @@ def main() -> None:
         fmt = input_format
 
     if not raw or not raw.strip():
-        st.info("Awaiting structural or genetic input. Upload a file, choose a sample reference, or enter data in the workspace text field.")
+        st.info("Upload a file, select a sample, or paste a sequence.")
         st.stop()
 
     try:
@@ -494,7 +494,7 @@ def main() -> None:
         st.warning("No validated records matched the selected structural parser settings.")
         st.stop()
 
-    st.success(f"Successfully loaded and cached **{len(records)}** sequence entity record(s).")
+    st.success(f"Loaded **{len(records)}** sequence(s).")
 
     page = st.radio(
         "View Mode Selector",
