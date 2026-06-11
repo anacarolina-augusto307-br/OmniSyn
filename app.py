@@ -32,6 +32,9 @@ except Exception as e:
     st.error(f"3D Import Error: {e}")
 
 # Configuração da página (deve ser o primeiro comando Streamlit)
+    # Substituir em breve o símbolo de DNA da página para o da omnisyn
+    #
+
 st.set_page_config(
     page_title=PROJECT_NAME,
     page_icon="🧬",
@@ -40,8 +43,8 @@ st.set_page_config(
 )
 
 # Logo da omnisyn
-# Melhorar a qualidade da logo em breve, atualmente está em 400x400 - feita pelo remove.bg gratuito
-# Atualmente o "right = st.columns([1.1, 1, 1])" funciona pq a aba está evidente na tela, se ela fechar a logo fica torta
+    # Melhorar a qualidade da logo em breve, atualmente está em 400x400 - feita pelo remove.bg gratuito
+    # Atualmente o "right = st.columns([1.1, 1, 1])" funciona pq a aba está evidente na tela, se ela fechar a logo fica torta
 left, center_col, right = st.columns([1.1, 1, 1])
 
 with center_col:
@@ -51,7 +54,7 @@ with center_col:
     )
 
 # Título da Omnisyn
-# Para modificar a frase do título - acho improvável, mas enfim - trocar no arquivo omnisyn_meta.py desse github
+    # Para modificar a frase do título - acho improvável, mas enfim - trocar no arquivo omnisyn_meta.py desse github
 st.markdown(
     """
     <h1 style="
@@ -67,7 +70,7 @@ st.markdown(
 )
 
 # Subtítulo da Omnisyn
-# Para modificar a frase do subtítulo trocar no arquivo omnisyn_meta.py desse github
+    # Para modificar a frase do subtítulo trocar no arquivo omnisyn_meta.py desse github
 st.markdown(
     f"""
     <p style="text-align:center; font-size:18px; color:#a1a1aa;">
