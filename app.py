@@ -80,7 +80,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Importações das funções lógicas do núcleo do analisador
+#  Importações das funções lógicas do núcleo do analisador
 from analyzer.core import (
     LIMITATIONS,
     analyze_sequence,
