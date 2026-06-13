@@ -1,9 +1,9 @@
 # Dados em `sample_data`
 
 ## Organismos reais (NCBI GenBank)
+# A utilização do 25 kb se dá porque fragmentos menores são analizados mais rápido para os teste da interface
 
 Fragmentos de **25 kb** do início de cada cromossomo/região de referência. Baixados via NCBI E-utilities (`efetch`), 2026.
-# A utilização do 25 kb se dá porque fragmentos menores são analizados mais rápido para os teste da interface
 
 | Arquivo | Organismo | Contexto | Acesso NCBI |
 |---------|-----------|----------|-------------|
