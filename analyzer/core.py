@@ -43,7 +43,8 @@ class AnalysisResult:
     codon_usage: dict[str, int] = field(default_factory=dict)
     reading_frames: dict[str, str] = field(default_factory=dict)
 
-
+# Guardar os OFR encontrados durante a varredura e depois salvar as proteínas traduzidas com os códons de entrada e depois de parada
+# A interface vai fazer o cofere por lá 
 @dataclass
 class ORF:
     """Open reading frame hit."""
@@ -56,7 +57,7 @@ class ORF:
     sequence: str
     protein: str
 
-
+# Resultados finais e % de identidade, source e números de matches que aparecem na interface
 @dataclass
 class AlignmentResult:
     """Pairwise alignment between two sequences."""
@@ -74,7 +75,7 @@ class AlignmentResult:
 def _clean_sequence(text: str) -> str:
     return "".join(text.upper().split())
 
-
+# O usuário pode colar uma sequência pura ou enviar conteúdo em FASTA/GenBank
 def parse_sequences(
     raw: str,
     fmt: str = "fasta",
@@ -83,13 +84,14 @@ def parse_sequences(
     raw = raw.strip()
     if not raw:
         return []
-
+  # Se o usuário colou apenas a sequência, crio manualmente um SeqRecord, para manter o restante do pipeline funcionando do mesmo jeito
     if fmt == "plain":
         seq = _clean_sequence(raw)
         if not seq:
             return []
         return [SeqRecord(Seq(seq), id="sequence_1", description="Pasted sequence")]
-
+        
+    # Deixar o Biopython fazer o trabalho pesado, para FASTA e GenBank
     handle = StringIO(raw)
     records = list(seqio_parse(handle, fmt))
     return records
@@ -243,7 +245,8 @@ def protein_properties(protein: str) -> dict[str, float | str | int]:
         "secondary_structure": analysis.secondary_structure_fraction(),
     }
 
-
+# Sem criação de algoritmos de alinhamento para evitar lentidão da Omnisyn
+# Usar biopython para deixar no pique de caroo de fórmula 1
 def pairwise_align(
     record_a: SeqRecord,
     record_b: SeqRecord,
@@ -252,13 +255,12 @@ def pairwise_align(
     gap_open: int = -2,
     gap_extend: int = -0.5,
 ) -> AlignmentResult | None:
-    """Global pairwise alignment with identity statistics."""
     a = str(_dna_from_record(record_a))
     b = str(_dna_from_record(record_b))
 
     if not a or not b:
         return None
-
+# Extração de estátistica de identidade
     alignments = pairwise2.align.globalms(
         a, b, match, mismatch, gap_open, gap_extend, one_alignment_only=True
     )
@@ -282,9 +284,12 @@ def pairwise_align(
         length=length,
     )
 
-
+#Uso das "sliding window" (50bp)
+    # Evitar erros ao calcular sequências de 5000 caracteres/digitos/codons 
+    # Fazer a média global do GC para coletar áreas de baixa e alta presença de GC
+        # Lembrar que GC ajuda a achar os genes ativos do genoma 
 def sliding_gc(seq: str, window: int = 50) -> list[tuple[int, float]]:
-    """GC content in a sliding window for plotting."""
+     """Compute local GC content using overlapping windows."""
     seq = _clean_sequence(seq)
     if len(seq) < window:
         gc = round(gc_fraction(Seq(seq), ambiguous="ignore") * 100, 2) if seq else 0
