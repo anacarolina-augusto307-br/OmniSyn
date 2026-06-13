@@ -2,7 +2,8 @@
 
 ## Organismos reais (NCBI GenBank)
 
-Fragmentos de **25 kb** do início de cada cromossomo/região de referência. Baixados via NCBI E-utilities (`efetch`), maio/2026.
+Fragmentos de **25 kb** do início de cada cromossomo/região de referência. Baixados via NCBI E-utilities (`efetch`), 2026.
+# A utilização do 25 kb se dá porque fragmentos menores são analizados mais rápido para os teste da interface
 
 | Arquivo | Organismo | Contexto | Acesso NCBI |
 |---------|-----------|----------|-------------|
@@ -17,6 +18,9 @@ Fontes alternativas para amostras metagenômicas: [EBI Metagenomics](https://www
 - `example.fasta` — fragmentos artificiais/pequenos para testar a interface web rapidamente (não são genomas completos).
 
 ## Comparação
+#Observação:
+  #Os organismos foram escolhidos para representar ambientes distintos (solo, ambiente marinho e ambiente hipersalino),permitindo comparar perfis genômicos diferentes.
+
 
 ```bash
 python scripts/compare_organisms.py
