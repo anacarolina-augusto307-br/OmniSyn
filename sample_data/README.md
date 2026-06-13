@@ -18,8 +18,8 @@ Fontes alternativas para amostras metagenômicas: [EBI Metagenomics](https://www
 
 ## Comparação
 #Observações:
-  # A utilização do 25 kb se dá porque fragmentos menores são analizados mais rápido para os teste da interface
-  #Os organismos foram escolhidos para representar ambientes distintos (solo, ambiente marinho e ambiente hipersalino),permitindo comparar perfis genômicos diferentes.
+  #Os organismos foram escolhidos para representar ambientes distintos (solo, ambiente marinho e ambiente hipersalino),permitindo comparar perfis genômicos diferentes
+  #A utilização do 25 kb se dá porque fragmentos menores são analizados mais rápido para os teste da interface 
 
 
 ```bash
