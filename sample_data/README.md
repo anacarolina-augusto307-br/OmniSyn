@@ -1,7 +1,6 @@
 # Dados em `sample_data`
 
 ## Organismos reais (NCBI GenBank)
-# A utilização do 25 kb se dá porque fragmentos menores são analizados mais rápido para os teste da interface
 
 Fragmentos de **25 kb** do início de cada cromossomo/região de referência. Baixados via NCBI E-utilities (`efetch`), 2026.
 
@@ -18,7 +17,8 @@ Fontes alternativas para amostras metagenômicas: [EBI Metagenomics](https://www
 - `example.fasta` — fragmentos artificiais/pequenos para testar a interface web rapidamente (não são genomas completos).
 
 ## Comparação
-#Observação:
+#Observações:
+  # A utilização do 25 kb se dá porque fragmentos menores são analizados mais rápido para os teste da interface
   #Os organismos foram escolhidos para representar ambientes distintos (solo, ambiente marinho e ambiente hipersalino),permitindo comparar perfis genômicos diferentes.
 
 
