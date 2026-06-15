@@ -12,6 +12,7 @@ LIMITATIONS: tuple[str, ...] = (
     "Global pairwise alignment is not suitable for distant or rearranged regions.",
 )
 
+# Biopython: tradução, alinhamento, GC e manipulação de sequências.
 from dataclasses import dataclass, field
 from io import StringIO
 from typing import Iterator
@@ -43,7 +44,7 @@ class AnalysisResult:
     codon_usage: dict[str, int] = field(default_factory=dict)
     reading_frames: dict[str, str] = field(default_factory=dict)
 
-# Guardar os OFR encontrados durante a varredura e depois salvar as proteínas traduzidas com os códons de entrada e depois de parada
+# Guardar as OFRs encontradas durante a varredura e depois salvar as proteínas traduzidas com os códons de entrada e depois de parada
 # A interface vai fazer o cofere por lá 
 @dataclass
 class ORF:
@@ -84,6 +85,7 @@ def parse_sequences(
     raw = raw.strip()
     if not raw:
         return []
+        
   # Se o usuário colou apenas a sequência, crio manualmente um SeqRecord, para manter o restante do pipeline funcionando do mesmo jeito
     if fmt == "plain":
         seq = _clean_sequence(raw)
@@ -103,9 +105,10 @@ def _is_rna(seq: str) -> bool:
 
 def _dna_from_record(record: SeqRecord) -> Seq:
     seq = str(record.seq).upper()
+    # Padronizar tudo como DNA para evitar duplicação de lógica
     if _is_rna(seq):
         return Seq(seq.replace("U", "T"))
-    return Seq(seq.replace("U", "T"))
+    return Seq(seq)
 
 
 def _nucleotide_composition(seq: str) -> tuple[dict[str, int], dict[str, float]]:
@@ -115,14 +118,18 @@ def _nucleotide_composition(seq: str) -> tuple[dict[str, int], dict[str, float]]
     percents = {b: round(100 * counts[b] / total, 2) for b in bases}
     return counts, percents
 
-
+# Presente: identificar reconrrência dos códons
+# Futuro:comparar padrões de uso de códons entre organismos diferentes
 def _codon_usage(seq: str) -> dict[str, int]:
-    usage: dict[str, int] = {}
+    usage = {}
     for i in range(0, len(seq) - 2, 3):
-        codon = seq[i : i + 3]
+        codon = seq[i:i+3]
         if len(codon) == 3 and "N" not in codon:
-            usage[codon] = usage.get(codon, 0) + 1
-    return dict(sorted(usage.items(), key=lambda x: -x[1]))
+            if codon in usage:
+                usage[codon] += 1
+            else:
+                usage[codon] = 1
+    return dict(sorted(usage.items(), key=lambda x: x[1], reverse=True))
 
 
 def _reading_frames(seq: Seq) -> dict[str, str]:
@@ -133,7 +140,6 @@ def _reading_frames(seq: Seq) -> dict[str, str]:
     for frame in range(3):
         offset = frame
         sub = str(seq[offset:])
-        # CORREÇÃO: Envolvendo a string 'sub' em Seq() para usar o translate do Biopython
         protein = str(Seq(sub).translate(table=1, to_stop=False))
         frames[f"+{frame + 1}"] = protein[:500]
         
@@ -142,7 +148,6 @@ def _reading_frames(seq: Seq) -> dict[str, str]:
     for frame in range(3):
         offset = frame
         sub = str(rev[offset:])
-        # CORREÇÃO: Envolvendo a string 'sub' em Seq() para usar o translate do Biopython
         protein = str(Seq(sub).translate(table=1, to_stop=False))
         frames[f"-{frame + 1}"] = protein[:500]
         
