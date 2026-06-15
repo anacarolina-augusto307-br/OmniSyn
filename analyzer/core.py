@@ -183,7 +183,9 @@ def analyze_sequence(record: SeqRecord) -> AnalysisResult:
         reading_frames=_reading_frames(dna),
     )
 
-
+#ORF finder propositalmente simples
+    #fornecer uma exploração rápida de regiões codificadoras potenciais dentro do Omnisyn
+    #não substitui um pipeline
 def find_orfs(
     record: SeqRecord,
     min_length: int = 90,
