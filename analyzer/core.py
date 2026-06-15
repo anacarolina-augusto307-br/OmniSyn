@@ -85,7 +85,6 @@ def parse_sequences(
     raw = raw.strip()
     if not raw:
         return []
-        
   # Se o usuário colou apenas a sequência, crio manualmente um SeqRecord, para manter o restante do pipeline funcionando do mesmo jeito
     if fmt == "plain":
         seq = _clean_sequence(raw)
@@ -296,7 +295,7 @@ def pairwise_align(
     # Fazer a média global do GC para coletar áreas de baixa e alta presença de GC
         # Lembrar que GC ajuda a achar os genes ativos do genoma 
 def sliding_gc(seq: str, window: int = 50) -> list[tuple[int, float]]:
-     """Compute local GC content using overlapping windows."""
+    """Compute local GC content using overlapping windows."""
     seq = _clean_sequence(seq)
     if len(seq) < window:
         gc = round(gc_fraction(Seq(seq), ambiguous="ignore") * 100, 2) if seq else 0
