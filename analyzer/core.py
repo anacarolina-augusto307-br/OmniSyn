@@ -24,10 +24,9 @@ from Bio.SeqRecord import SeqRecord
 from Bio.SeqUtils import gc_fraction
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
-
+# Estrutura principal  para reunir os resultados  produzidos pela análise de uma sequência
 @dataclass
 class AnalysisResult:
-    """Summary statistics for a single DNA/RNA sequence."""
 
     id: str
     description: str
@@ -48,7 +47,6 @@ class AnalysisResult:
 # A interface vai fazer o cofere por lá 
 @dataclass
 class ORF:
-    """Open reading frame hit."""
 
     frame: int
     strand: str
@@ -61,7 +59,6 @@ class ORF:
 # Resultados finais e % de identidade, source e números de matches que aparecem na interface
 @dataclass
 class AlignmentResult:
-    """Pairwise alignment between two sequences."""
 
     seq_a_id: str
     seq_b_id: str
@@ -130,9 +127,8 @@ def _codon_usage(seq: str) -> dict[str, int]:
                 usage[codon] = 1
     return dict(sorted(usage.items(), key=lambda x: x[1], reverse=True))
 
-
+# Calcula as proteínas para as 6 janelas de leitura (três forward, três reverse)
 def _reading_frames(seq: Seq) -> dict[str, str]:
-    """Calcula as proteínas para as 6 janelas de leitura (três forward, três reverse)."""
     frames = {}
     
     # Sentido Direto (+)
@@ -152,9 +148,8 @@ def _reading_frames(seq: Seq) -> dict[str, str]:
         
     return frames
 
-
+# Analise de sequ~encia gravada/registrada
 def analyze_sequence(record: SeqRecord) -> AnalysisResult:
-    """Run full analysis on one sequence record."""
     dna = _dna_from_record(record)
     seq_str = str(dna)
 
