@@ -71,7 +71,16 @@ def handle_align(args):
     sys.exit(1)
 
 raw_content = Path(args.input).read_text(enconding="utf-8")
-records = parse_sequences(raw_content
+records = parse_sequences(raw_content, ftm=args.format)
+
+  if args.file2:
+        if not Path(args.file2).exists():
+            print(f"❌ Erro: File '{args.file2}' not found.", file=sys.stderr)
+            sys.exit(1)
+        content2 = Path(args.file2).read_text(encoding="utf-8")
+        records_b = parse_sequences(content2, fmt=args.format2)
+  else: # Se o segundo arquivo não foi passado, assume-se que as duas sequências estão dentro do primeiro arquivo
+        records_b = records_a
 
     
   
