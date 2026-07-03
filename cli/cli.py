@@ -81,6 +81,7 @@ records = parse_sequences(raw_content, ftm=args.format)
         records_b = parse_sequences(content2, fmt=args.format2)
   else: # Se o segundo arquivo não foi passado, assume-se que as duas sequências estão dentro do primeiro arquivo
         records_b = records_a
+    
 
     
   
